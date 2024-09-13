@@ -1,0 +1,15 @@
+goservices:
+
+  mongo:
+    container_name: ${DB_CONTAINER_NAME}
+    image: mongo
+    restart: always
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${INIT_DB}
+    volumes:
+      #- ./data:/data/db
+      - ./scripts:/docker-entrypoint-initdb.d
