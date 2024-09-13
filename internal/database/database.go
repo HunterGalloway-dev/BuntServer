@@ -78,14 +78,28 @@ func (s *service) GetAllProjects(tags []string) []models.Project {
 	defer cancel()
 
 	projectCollection := s.getCollection("projects")
+	fmt.Println(tags, len(tags))
 
-	filter := bson.D{{
-		Key: "tags", Value: bson.D{{Key: "$all", Value: tags}}}}
+	var filter bson.D
+	if len(tags) > 0 {
+		var test bson.A
+		for _, tag := range tags {
+			test = append(test, tag)
+		}
+
+		filter = bson.D{
+			{"tags", bson.D{{"$all", test}}},
+		}
+
+	} else {
+		filter = bson.D{}
+	}
 
 	results, err := projectCollection.Find(ctx, filter)
 
 	if err != nil {
 		log.Fatal("Failed to get all objects")
+		log.Fatal(err)
 	}
 
 	defer results.Close(ctx)
@@ -95,11 +109,7 @@ func (s *service) GetAllProjects(tags []string) []models.Project {
 			log.Fatal("Failed decoding project from result")
 		}
 
-		if len(tags) > 0 {
-
-		} else {
-			projects = append(projects, singleProject)
-		}
+		projects = append(projects, singleProject)
 
 	}
 

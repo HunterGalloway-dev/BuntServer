@@ -1,5 +1,5 @@
-print("START #####################################################")
-db.createCollection('projects');
+print("START #####################################################");
+db.createCollection("projects");
 db.projects.insertMany([
   {
     title: "Example Project 1 Title",
@@ -8,7 +8,7 @@ db.projects.insertMany([
     youtubeURL: "Example Project 1 Youtube URL",
     imageURL: "Example Project 1 Image URL",
     description: "Example Project 1 Description",
-    tags: ["Tag 1", "Tag 2", "Tag 3"]
+    tags: ["JS", "React", "MongoDB"],
   },
   {
     title: "Example Project 2 Title",
@@ -17,7 +17,7 @@ db.projects.insertMany([
     youtubeURL: "Example Project 2 Youtube URL",
     imageURL: "Example Project 2 Image URL",
     description: "Example Project 2 Description",
-    tags: ["Tag 1", "Tag 2", "Tag 3"]
+    tags: ["Mongo", "Go", "NextJS"],
   },
   {
     title: "Example Project 3 Title",
@@ -26,8 +26,8 @@ db.projects.insertMany([
     youtubeURL: "Example Project 3 Youtube URL",
     imageURL: "Example Project 3 Image URL",
     description: "Example Project 3 Description",
-    tags: ["Tag 1", "Tag 2", "Tag 3"]
-  }
+    tags: ["Ruby", "SQL", "Go"],
+  },
 ]);
 
-print("END   #####################################################")
+print("END   #####################################################");

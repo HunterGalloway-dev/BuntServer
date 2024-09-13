@@ -1,5 +1,4 @@
-goservices:
-
+services:
   mongo:
     container_name: ${DB_CONTAINER_NAME}
     image: mongo

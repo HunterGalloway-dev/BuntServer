@@ -4,6 +4,7 @@ import (
 	"BuntServer/internal/coderun"
 	"BuntServer/internal/models"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/health", s.serverHealthHandler)
 	r.GET("/db_heatlh", s.dbHealthHandler)
 	r.GET("/projects", s.getAllProjectsHandler)
+	r.GET("/projects/tags", s.getProjectTags)
 	r.GET("/anagrams", s.getAnagramSolution)
 
 	r.POST("/coderun", s.postCodeRunResult)
@@ -53,7 +55,11 @@ func (s *Server) dbHealthHandler(c *gin.Context) {
 
 func (s *Server) getAllProjectsHandler(c *gin.Context) {
 	var tags []string
-	tags = append(tags, "Tag 1")
+
+	tagQuery := c.DefaultQuery("tags", "notags")
+	if tagQuery != "notags" {
+		tags = strings.Split(tagQuery, ",")
+	}
 
 	projects := s.db.GetAllProjects(tags)
 
@@ -83,7 +89,7 @@ func (s *Server) postCodeRunResult(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, result)
 }
 
-func (s *Server) GetProjectTags(c *gin.Context) {
+func (s *Server) getProjectTags(c *gin.Context) {
 	tags := s.db.GetAllTags()
 	c.JSON(http.StatusOK, map[string]interface{}{"data": tags})
 }
