@@ -7,7 +7,7 @@ import (
 )
 
 type Project struct {
-	Id               primitive.ObjectID `json:"_id" bson:"_id"`
+	Id               primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Title            string             `json:"title" validate:"required"`
 	ShortDescription string             `json:"shortDescription" validate:"required"`
 	GithubURL        string             `json:"githubURL" validate:"required"`

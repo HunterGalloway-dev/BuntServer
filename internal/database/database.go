@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,6 +20,8 @@ type Service interface {
 	Health() map[string]string
 	GetAllProjects([]string) []models.Project
 	GetAllTags() []string
+	PostProject(models.Project) primitive.ObjectID
+	DeleteProject(string) bool
 }
 
 type service struct {
@@ -121,8 +125,64 @@ func (s *service) GetAllTags() []string {
 	projects := s.GetAllProjects(tags)
 
 	for _, project := range projects {
-		tags = append(tags, project.Tags...)
+		for _, tag := range project.Tags {
+			if !slices.Contains(tags, tag) {
+				tags = append(tags, tag)
+			}
+		}
 	}
 
 	return tags
+}
+
+func (s *service) PostProject(project models.Project) primitive.ObjectID {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	projectCollection := s.getCollection("projects")
+
+	if project.Id.IsZero() {
+		result, err := projectCollection.InsertOne(ctx, project)
+
+		if err != nil {
+			log.Fatal("Failed to create project")
+		}
+
+		return result.InsertedID.(primitive.ObjectID)
+	} else {
+		fmt.Println(project.Id)
+		update := bson.D{{Key: "$set", Value: bson.D{
+			{Key: "title", Value: project.Title},
+			{Key: "shortDescription", Value: project.ShortDescription},
+			{Key: "githubURL", Value: project.GithubURL},
+			{Key: "youtubeURL", Value: project.YoutubeURL},
+			{Key: "imageURL", Value: project.ImageURL},
+			{Key: "description", Value: project.Description},
+			{Key: "tags", Value: project.Tags}}}}
+		_, err := projectCollection.UpdateByID(ctx, project.Id, update)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return project.Id
+	}
+}
+
+func (s *service) DeleteProject(id string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.D{{"_id", id}}
+	projectCollection := s.getCollection("projects")
+
+	result, err := projectCollection.DeleteOne(ctx, filter)
+
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	fmt.Println(result)
+
+	return true
 }

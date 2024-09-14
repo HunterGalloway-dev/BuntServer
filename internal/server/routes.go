@@ -33,8 +33,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/health", s.serverHealthHandler)
 	r.GET("/db_heatlh", s.dbHealthHandler)
+
 	r.GET("/projects", s.getAllProjectsHandler)
 	r.GET("/projects/tags", s.getProjectTags)
+	r.POST("/projects", s.postProject)
+	r.DELETE("/projects/:id", s.deleteProject)
+
 	r.GET("/anagrams", s.getAnagramSolution)
 
 	r.POST("/coderun", s.postCodeRunResult)
@@ -92,4 +96,31 @@ func (s *Server) postCodeRunResult(c *gin.Context) {
 func (s *Server) getProjectTags(c *gin.Context) {
 	tags := s.db.GetAllTags()
 	c.JSON(http.StatusOK, map[string]interface{}{"data": tags})
+}
+
+func (s *Server) postProject(c *gin.Context) {
+	var project models.Project
+	if err := c.Bind(&project); err != nil {
+		// Return error
+		c.JSON(http.StatusBadRequest, "Failed to post project")
+	}
+
+	// Upset into DB
+	id := s.db.PostProject(project)
+
+	project.Id = id
+
+	c.IndentedJSON(http.StatusCreated, project)
+}
+
+func (s *Server) deleteProject(c *gin.Context) {
+	id := c.Param("id")
+
+	res := s.db.DeleteProject(id)
+
+	if res {
+		c.JSON(http.StatusOK, "Document deleted")
+	} else {
+		c.JSON(http.StatusBadRequest, "Bad request")
+	}
 }
