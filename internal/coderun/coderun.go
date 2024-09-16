@@ -4,6 +4,7 @@ import (
 	"BuntServer/internal/models"
 	"bytes"
 	"fmt"
+	"log"
 	"math/rand/v2"
 	"os"
 	"os/exec"
@@ -24,6 +25,9 @@ func runGo(crRequest *models.CodeRunRequest) *models.CodeRunOutput {
 	errBuf := new(bytes.Buffer)
 
 	cmd := exec.Command("go", "run", crRequest.MainFilePath)
+	if cmd.Err != nil {
+		log.Fatal(cmd.Err)
+	}
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
 	cmd.Run()
@@ -39,6 +43,9 @@ func runJava(crRequest *models.CodeRunRequest) *models.CodeRunOutput {
 	errBuf := new(bytes.Buffer)
 
 	cmd := exec.Command("javac", "-d", ".", crRequest.MainFilePath)
+	if cmd.Err != nil {
+		log.Fatal(cmd.Err)
+	}
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
 	cmd.Run()
@@ -59,6 +66,9 @@ func runPython(crRequest *models.CodeRunRequest) *models.CodeRunOutput {
 	errBuf := new(bytes.Buffer)
 
 	cmd := exec.Command("py", crRequest.MainFilePath)
+	if cmd.Err != nil {
+		log.Fatal(cmd.Err)
+	}
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
 	cmd.Run()
@@ -74,6 +84,10 @@ func runJavaScript(crRequest *models.CodeRunRequest) *models.CodeRunOutput {
 	errBuf := new(bytes.Buffer)
 
 	cmd := exec.Command("node", crRequest.MainFilePath)
+	//cmd := exec.Command("test")
+	if cmd.Err != nil { // DRY abstract into base function and inject commands
+		log.Fatal(cmd.Err)
+	}
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
 	cmd.Run()
