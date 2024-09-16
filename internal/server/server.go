@@ -2,6 +2,7 @@ package server
 
 import (
 	"BuntServer/internal/anagrams"
+	"BuntServer/internal/aws"
 	"BuntServer/internal/database"
 	"fmt"
 	"net/http"
@@ -17,7 +18,8 @@ type Server struct {
 
 	anagramSolver anagrams.AnagramSolver
 
-	db database.Service
+	db  database.Service
+	aws aws.Service
 }
 
 func NewServer() *http.Server {
@@ -25,6 +27,7 @@ func NewServer() *http.Server {
 
 	NewServer := &Server{
 		port:          port,
+		aws:           aws.New(),
 		db:            database.New(),
 		anagramSolver: *anagrams.BuildAnagramSolver(os.Getenv("WORDS_DIR")),
 	}

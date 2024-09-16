@@ -82,7 +82,6 @@ func (s *service) GetAllProjects(tags []string) []models.Project {
 	defer cancel()
 
 	projectCollection := s.getCollection("projects")
-	fmt.Println(tags, len(tags))
 
 	var filter bson.D
 	if len(tags) > 0 {
@@ -156,6 +155,8 @@ func (s *service) PostProject(project models.Project) primitive.ObjectID {
 			{Key: "githubURL", Value: project.GithubURL},
 			{Key: "youtubeURL", Value: project.YoutubeURL},
 			{Key: "imageURL", Value: project.ImageURL},
+			{Key: "liveURL", Value: project.LiveURL},
+			{Key: "githubURL", Value: project.GithubURL},
 			{Key: "description", Value: project.Description},
 			{Key: "tags", Value: project.Tags}}}}
 		_, err := projectCollection.UpdateByID(ctx, project.Id, update)

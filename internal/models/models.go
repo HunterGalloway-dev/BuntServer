@@ -13,6 +13,7 @@ type Project struct {
 	GithubURL        string             `json:"githubURL" validate:"required"`
 	YoutubeURL       string             `json:"youtubeURL" validate:"required"`
 	ImageURL         string             `json:"imageURL" validate:"required"`
+	LiveURL          string             `json:"liveURL" validate:"required"`
 	Description      string             `json:"description" validate:"required"`
 	Tags             []string           `json:"tags" validate:"required"`
 }

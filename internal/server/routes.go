@@ -3,6 +3,7 @@ package server
 import (
 	"BuntServer/internal/coderun"
 	"BuntServer/internal/models"
+	"log"
 	"net/http"
 	"strings"
 
@@ -43,6 +44,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.POST("/coderun", s.postCodeRunResult)
 
+	r.POST("/uploadFile", s.uploadFile)
+
 	return r
 }
 
@@ -61,7 +64,7 @@ func (s *Server) getAllProjectsHandler(c *gin.Context) {
 	var tags []string
 
 	tagQuery := c.DefaultQuery("tags", "notags")
-	if tagQuery != "notags" {
+	if len(tagQuery) != 0 {
 		tags = strings.Split(tagQuery, ",")
 	}
 
@@ -123,4 +126,31 @@ func (s *Server) deleteProject(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusBadRequest, "Bad request")
 	}
+}
+
+func (s *Server) uploadFile(c *gin.Context) {
+	file, err := c.FormFile("file")
+
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println(file.Filename)
+	}
+
+	f, err := file.Open()
+
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, "Failed to open file")
+		return
+	}
+	loc, err := s.aws.UploadFile(file.Filename, f)
+
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, "Failed to upload file")
+		return
+	}
+
+	c.JSON(http.StatusCreated, map[string]interface{}{"data": loc})
 }
