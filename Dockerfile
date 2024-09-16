@@ -16,6 +16,9 @@ COPY . .
 # Build
 RUN go build -o bin/docker-buntserver ./cmd/api/main.go
 
+RUN apt-get update
+RUN apt-get install nodejs -y
+
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
 # But we can document in the Dockerfile what ports
