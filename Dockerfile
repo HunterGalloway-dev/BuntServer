@@ -16,6 +16,7 @@ COPY . .
 # Build
 RUN go build -o bin/docker-buntserver ./cmd/api/main.go
 
+# Install dependencys for code runner
 RUN apt-get update
 RUN apt-get install nodejs -y
 
